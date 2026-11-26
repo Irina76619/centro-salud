@@ -16,15 +16,17 @@ import modelo.Medico;
 import modelo.Paciente;
 import modelo.Receta;
 import java.util.ArrayList;
+
 /**
  * Genera los reportes del sistema (RN-13: solo lectura, no modifican datos).
  *
- * Cada reporte tiene dos versiones:
- *  - textoXxx(): DEVUELVE el reporte como String. Lo usa la interfaz gráfica (JTextArea).
- *  - xxx():      lo IMPRIME en consola. Lo usa MenuConsola (versión de respaldo).
- * La versión de consola solo llama a la de texto, así no se repite la lógica.
+ * Cada reporte tiene dos versiones: - textoXxx(): DEVUELVE el reporte como
+ * String. Lo usa la interfaz gráfica (JTextArea). - xxx(): lo IMPRIME en
+ * consola. Lo usa MenuConsola (versión de respaldo). La versión de consola solo
+ * llama a la de texto, así no se repite la lógica.
  */
 public class ServicioReportes {
+
     private CitaDAO citaDAO;
     private MedicoDAO medicoDAO;
     private EspecialidadDAO especialidadDAO;
@@ -35,7 +37,7 @@ public class ServicioReportes {
     private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public ServicioReportes(CitaDAO citaDAO, MedicoDAO medicoDAO, EspecialidadDAO especialidadDAO,
-                            RecetaDAO recetaDAO, HistorialClinicoDAO historialDAO) {
+            RecetaDAO recetaDAO, HistorialClinicoDAO historialDAO) {
         this.citaDAO = citaDAO;
         this.medicoDAO = medicoDAO;
         this.especialidadDAO = especialidadDAO;
@@ -43,10 +45,15 @@ public class ServicioReportes {
         this.historialDAO = historialDAO;
     }
 
-    /** Una línea de reporte para una cita; si incluirMedico es false se omite el médico. */
+    /**
+     * Una línea de reporte para una cita; si incluirMedico es false se omite el
+     * médico.
+     */
     private String lineaCita(Cita c, boolean incluirMedico) {
         String linea = "  " + c.getFechaHora().format(FECHA_HORA) + " | " + c.getPaciente().getNombreCompleto();
-        if (incluirMedico) linea += " | Dr(a). " + c.getMedico().getNombreCompleto();
+        if (incluirMedico) {
+            linea += " | Dr(a). " + c.getMedico().getNombreCompleto();
+        }
         return linea + " | " + c.getMotivo() + " | " + c.getEstado() + "\n";
     }
 
@@ -133,9 +140,11 @@ public class ServicioReportes {
         lista.sort(Comparator.comparing(HistorialClinico::getFecha));       // ordenado por fecha
         for (HistorialClinico h : lista) {
             sb.append("  ").append(h.getFecha().format(FECHA)).append(" | Diagnóstico: ")
-              .append(h.getDiagnostico()).append(" | Tratamiento: ").append(h.getTratamiento()).append("\n");
+                    .append(h.getDiagnostico()).append(" | Tratamiento: ").append(h.getTratamiento()).append("\n");
         }
-        if (lista.isEmpty()) sb.append("  (sin registros)\n");
+        if (lista.isEmpty()) {
+            sb.append("  (sin registros)\n");
+        }
         return sb.toString();
     }
 
@@ -148,15 +157,17 @@ public class ServicioReportes {
         StringBuilder sb = new StringBuilder("=== RECETAS Y TRATAMIENTOS ===\n");
         for (HistorialClinico h : historialDAO.listar()) {
             sb.append("\n").append(h.getFecha().format(FECHA)).append(" | ")
-              .append(h.getPaciente().getNombreCompleto())
-              .append(" | Diagnóstico: ").append(h.getDiagnostico())
-              .append(" | Tratamiento: ").append(h.getTratamiento()).append("\n");
+                    .append(h.getPaciente().getNombreCompleto())
+                    .append(" | Diagnóstico: ").append(h.getDiagnostico())
+                    .append(" | Tratamiento: ").append(h.getTratamiento()).append("\n");
             if (h.getCita() != null) {
                 List<Receta> recetas = recetaDAO.listarPorCita(h.getCita());
-                if (recetas.isEmpty()) sb.append("    (sin recetas)\n");
+                if (recetas.isEmpty()) {
+                    sb.append("    (sin recetas)\n");
+                }
                 for (Receta r : recetas) {
                     sb.append("    Receta: ").append(r.getMedicamento())
-                      .append(" - ").append(r.getIndicaciones()).append("\n");
+                            .append(" - ").append(r.getIndicaciones()).append("\n");
                 }
             }
         }
@@ -166,13 +177,15 @@ public class ServicioReportes {
     public void recetasYTratamientos() {
         System.out.print("\n" + textoRecetasYTratamientos());
     }
-    
-        // =====================================================================================
+
+    // =====================================================================================
     // VERSIÓN PARA TABLAS (JTable): filasXxx() devuelve una lista de filas en lugar de texto.
     // No modifican datos (RN-13). Los encabezados los pone la pantalla (PanelReportes).
     // =====================================================================================
-
-    /** Columnas: Médico | Fecha y hora | Paciente | Motivo | Estado (con una fila TOTAL por médico). */
+    /**
+     * Columnas: Médico | Fecha y hora | Paciente | Motivo | Estado (con una
+     * fila TOTAL por médico).
+     */
     public List<Object[]> filasCitasPorMedico() {
         List<Object[]> filas = new ArrayList<>();
         for (Medico m : medicoDAO.listar()) {
@@ -187,7 +200,10 @@ public class ServicioReportes {
         return filas;
     }
 
-    /** Columnas: Especialidad | Fecha y hora | Paciente | Médico | Motivo | Estado (con TOTAL por especialidad). */
+    /**
+     * Columnas: Especialidad | Fecha y hora | Paciente | Médico | Motivo |
+     * Estado (con TOTAL por especialidad).
+     */
     public List<Object[]> filasCitasPorEspecialidad() {
         List<Object[]> filas = new ArrayList<>();
         for (Especialidad e : especialidadDAO.listar()) {
@@ -205,7 +221,10 @@ public class ServicioReportes {
         return filas;
     }
 
-    /** Columnas: Fecha y hora | Paciente | Médico | Motivo | Estado (con una fila TOTAL al final). */
+    /**
+     * Columnas: Fecha y hora | Paciente | Médico | Motivo | Estado (con una
+     * fila TOTAL al final).
+     */
     public List<Object[]> filasCitasPorDia(LocalDate fecha) {
         List<Object[]> filas = new ArrayList<>();
         int total = 0;
@@ -219,7 +238,10 @@ public class ServicioReportes {
         return filas;
     }
 
-    /** Columnas: Fecha y hora | Paciente | Médico | Motivo | Estado (con una fila TOTAL al final). */
+    /**
+     * Columnas: Fecha y hora | Paciente | Médico | Motivo | Estado (con una
+     * fila TOTAL al final).
+     */
     public List<Object[]> filasCitasPorMes(int mes, int anio) {
         List<Object[]> filas = new ArrayList<>();
         int total = 0;
@@ -233,7 +255,9 @@ public class ServicioReportes {
         return filas;
     }
 
-    /** Columnas: Fecha | Diagnóstico | Tratamiento (ordenado por fecha). */
+    /**
+     * Columnas: Fecha | Diagnóstico | Tratamiento (ordenado por fecha).
+     */
     public List<Object[]> filasHistorialPorPaciente(Paciente p) {
         List<Object[]> filas = new ArrayList<>();
         List<HistorialClinico> lista = historialDAO.listarPorPaciente(p);   // es una copia
@@ -244,7 +268,10 @@ public class ServicioReportes {
         return filas;
     }
 
-    /** Columnas: Fecha | Paciente | Diagnóstico | Tratamiento | Receta (una fila por receta). */
+    /**
+     * Columnas: Fecha | Paciente | Diagnóstico | Tratamiento | Receta (una fila
+     * por receta).
+     */
     public List<Object[]> filasRecetasYTratamientos() {
         List<Object[]> filas = new ArrayList<>();
         for (HistorialClinico h : historialDAO.listar()) {
@@ -262,7 +289,45 @@ public class ServicioReportes {
         return filas;
     }
 
-    /** Fila común de los reportes por día y por mes. */
+    // CITAS NO ASISTIDAS POR MÉDICO
+    private int contarNoAsistidas(Medico m) {
+        int total = 0;
+        for (Cita c : citaDAO.listarPorMedico(m)) {
+            if (c.getEstado().equals("NO_ASISTIO")) {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    public String textoCitasNoAsistidasPorMedico() {
+        StringBuilder sb = new StringBuilder("=== CITAS NO ASISTIDAS POR MÉDICO ===\n\n");
+        for (Medico m : medicoDAO.listar()) {
+            sb.append("  ").append(m.getNombreCompleto()).append(" | ")
+                    .append(m.getEspecialidad().getNombre()).append(" | Inasistencias: ")
+                    .append(contarNoAsistidas(m)).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public void citasNoAsistidasPorMedico() {
+        System.out.print("\n" + textoCitasNoAsistidasPorMedico());
+    }
+
+    /**
+     * Columnas: Médico | Especialidad | Inasistencias.
+     */
+    public List<Object[]> filasCitasNoAsistidasPorMedico() {
+        List<Object[]> filas = new ArrayList<>();
+        for (Medico m : medicoDAO.listar()) {
+            filas.add(new Object[]{m.getNombreCompleto(), m.getEspecialidad().getNombre(), contarNoAsistidas(m)});
+        }
+        return filas;
+    }
+
+    /**
+     * Fila común de los reportes por día y por mes.
+     */
     private Object[] filaCitaConMedico(Cita c) {
         return new Object[]{c.getFechaHora().format(FECHA_HORA), c.getPaciente().getNombreCompleto(),
             "Dr(a). " + c.getMedico().getNombreCompleto(), c.getMotivo(), c.getEstado()};

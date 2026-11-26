@@ -13,7 +13,7 @@ public class InicializadorBD {
     public static void iniciar() {
         try (Connection cn = Conexion.conecta()) {
             if (cn == null || existeTabla(cn)) return;
-            ejecutarScript(cn, "/db/centro_salud_h2.sql");
+            ejecutarScript(cn, "/db/centro_salud.sql");
             System.out.println("Base de datos creada con datos de prueba.");
         } catch (Exception e) {
             System.out.println("Error al iniciar la base: " + e.getMessage());

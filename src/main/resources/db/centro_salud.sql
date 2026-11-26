@@ -48,7 +48,7 @@ CREATE TABLE cita (
     id           INT AUTO_INCREMENT PRIMARY KEY,
     fecha_hora   DATETIME NOT NULL,
     motivo       VARCHAR(150) NOT NULL,
-    estado       ENUM('PENDIENTE','ATENDIDA','CANCELADA') NOT NULL DEFAULT 'PENDIENTE',
+    estado       ENUM('PENDIENTE','ATENDIDA','CANCELADA','NO_ASISTIO') NOT NULL DEFAULT 'PENDIENTE',
     id_paciente  INT NOT NULL,
     id_medico    INT NOT NULL,
     FOREIGN KEY (id_paciente) REFERENCES paciente(id),
@@ -119,6 +119,7 @@ INSERT INTO cita (fecha_hora, motivo, estado, id_paciente, id_medico) VALUES
     ('2026-10-28 08:00:00', 'Chequeo general',         'PENDIENTE', 5, 1),
     ('2026-10-29 10:00:00', 'Vacunación',              'PENDIENTE', 3, 2),
     ('2026-10-30 16:00:00', 'Control de presión',      'PENDIENTE', 4, 3),
+    ('2026-10-15 11:00:00', 'Fiebre persistente',      'NO_ASISTIO', 3, 2),
     ('2026-11-04 09:00:00', 'Dolor de cabeza',         'PENDIENTE', 2, 1);
 
 INSERT INTO receta (medicamento, indicaciones, fecha, id_cita) VALUES

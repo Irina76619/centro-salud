@@ -78,7 +78,7 @@ public class CitaDAO {
 
     private boolean hayChoque(Cita c) {
         String sql = "select count(*) from cita "
-                   + "where id_medico = ? and fecha_hora = ? and estado <> 'CANCELADA' and id <> ?";
+                   + "where id_medico = ? and fecha_hora = ? and estado not in ('CANCELADA','NO_ASISTIO') and id <> ?";
         try (Connection cn = Conexion.conecta();
              PreparedStatement st = cn.prepareStatement(sql)) {
             st.setInt(1, c.getMedico().getId());

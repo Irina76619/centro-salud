@@ -2,7 +2,7 @@ package modelo;
 
 import java.time.LocalDateTime;
 
-/** Cita médica: une a un paciente con un médico en una fecha y hora. Su estado es PENDIENTE, ATENDIDA o CANCELADA. */
+/** Cita médica: une a un paciente con un médico en una fecha y hora. Su estado es «PENDIENTE, ATENDIDA, CANCELADA o NO_ASISTIO». */
 public class Cita {
     private int id;
     private LocalDateTime fechaHora;
